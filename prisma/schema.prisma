@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role{
+  User
+  Admin
+}
+model User {
+  id       String   @id @default(uuid())
+  name     String
+  email    String   @unique
+  password String
+  role     Role
+  books    Book[]
+  profile  Profile?
+}
+
+model Profile {
+  id           String @id @default(uuid())
+  bio          String
+  profilePhoto String
+  userId       String @unique
+  user         User   @relation(fields: [userId], references: [id])
+}
+
+model Book {
+  id            String         @id @default(uuid())
+  title         String
+  publishedYear Int
+  author        Author         @relation(fields: [authorId], references: [id])
+  category      Category       @relation(fields: [categoryId], references: [id])
+  user          User           @relation(fields: [userId], references: [id])
+  authorId      String
+  categoryId    String
+  userId        String
+  BookCategory  BookCategory[]
+}
+
+model Author {
+  id        String @id @default(uuid())
+  name      String
+  birthYear Int
+  books     Book[]
+}
+
+model Category {
+  id           String         @id @default(uuid())
+  name         String
+  books        Book[]
+  BookCategory BookCategory[]
+}
+
+model BookCategory {
+  bookId     String
+  categoryId String
+  book       Book     @relation(fields: [bookId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@id([bookId, categoryId])
+}
