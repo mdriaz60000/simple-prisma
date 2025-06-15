@@ -6,7 +6,7 @@ const app: Application = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/", authRoutes)
+app.use("/auth", authRoutes)
 
 app.get("/", (req: Request, res: Response) => {
   res.send({
